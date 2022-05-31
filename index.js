@@ -15,6 +15,7 @@ app.use(_AuthMiddleWare.isAuth)
 require('./app/routers/account.router')(app);
 require('./app/routers/account_type.router')(app);
 require('./app/routers/tour.router')(app);
+require('./app/routers/order.router')(app);
 
 // Khởi tạo port server
 app.listen(3100, function () {
