@@ -1,4 +1,5 @@
-const db = require('../common/connect');
+const db = require('../database/connect');
+const TBT = require('../database/table')
 
 // Khởi tạo đối tượng
 const Account = function (account) {
@@ -17,7 +18,7 @@ const Account = function (account) {
 
 // Phương thức get all
 Account.get_all = function (result) {
-    db.query("SELECT * FROM account", function (err, account) {
+    db.query("SELECT * FROM " + TBT.ACCOUNT, function (err, account) {
         if (err) {
             result(null);
         } else {
@@ -28,7 +29,7 @@ Account.get_all = function (result) {
 
 // Phương thức get details
 Account.getById = function (id, result) {
-    db.query("SELECT * FROM account WHERE UserID = ?", id, function (err, res) {
+    db.query("SELECT * FROM " + TBT.ACCOUNT + " WHERE UserID = ?", id, function (err, res) {
         if (err || res.length == 0) {
             console.log("error: " + err);
             result(null);
@@ -45,7 +46,7 @@ Account.getById = function (id, result) {
 Account.create = function (newData, result) {
     var newId;
     // Lấy UserID lớn nhất hiện tại + 1
-    db.query("SELECT MAX(CAST(MID(UserID,4,5) as unsigned)) AS MaxUser FROM Account", function (err, res) {
+    db.query("SELECT MAX(CAST(MID(UserID,4,5) as unsigned)) AS MaxUser FROM " + TBT.ACCOUNT, function (err, res) {
         if (err || res.length == 0) {
             newId = "Acc1";
         } else {
@@ -55,20 +56,20 @@ Account.create = function (newData, result) {
         newData.UserID = newId;
 
         // Thêm dữ liệu mới
-        db.query("INSERT INTO Account SET ?", newData, function (err, res) {
+        db.query("INSERT INTO " + TBT.ACCOUNT + " SET ?", newData, function (err, res) {
             if (err) {
                 console.log("error: " + err);
                 result(null);
                 return;
             }
-            result({ id: newData.UserID, ...newData });
+            result({...newData });
         });
     });
 }
 
 // Phương thức update
 Account.update = function (updateData, result) {
-    db.query("UPDATE Account SET TypeID=?, UserName=?, DateOfBirth=?, Phone=?, Gender=?, Address=?, Email=?, Password=?, Status=?, Level=? WHERE UserID=?",
+    db.query("UPDATE " + TBT.ACCOUNT + " SET TypeID=?, UserName=?, DateOfBirth=?, Phone=?, Gender=?, Address=?, Email=?, Password=?, Status=?, Level=? WHERE UserID=?",
         [updateData.TypeID, updateData.UserName, updateData.DateOfBirth, updateData.Phone, updateData.Gender, updateData.Address, updateData.Email, updateData.Password, updateData.Status, updateData.Level, updateData.UserID],
         function (err, res) {
             if (err) {
@@ -82,13 +83,13 @@ Account.update = function (updateData, result) {
 
 // Phương thức delete
 Account.remove = function (id, result) {
-    db.query("SELECT * FROM account WHERE UserID = ?", id, function (err, res) {
+    db.query("SELECT * FROM " + TBT.ACCOUNT + " WHERE UserID = ?", id, function (err, res) {
         if (err || res.length == 0) {
             console.log("error: " + err);
             result(null);
             return;
         } else {
-            db.query("DELETE FROM account WHERE UserID = ?", id, function (err, res) {
+            db.query("DELETE FROM " + TBT.ACCOUNT + " WHERE UserID = ?", id, function (err, res) {
                 if (err) {
                     console.log("error: " + err);
                     result(null);
@@ -102,7 +103,7 @@ Account.remove = function (id, result) {
 
 // Kiểm tra đăng nhập
 Account.check_login = function (data, result) {
-    db.query("SELECT * FROM account WHERE UserID = ? AND Password = ?", [data.UserID, data.Password], function (err, res) {
+    db.query("SELECT * FROM " + TBT.ACCOUNT + " WHERE UserID = ? AND Password = ?", [data.UserID, data.Password], function (err, res) {
         if (err) {
             console.log("error: " + err);
             result(null);
