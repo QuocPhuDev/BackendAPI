@@ -45,7 +45,6 @@ AccountType.create = function (newData, result) {
             newId = "T" + numId;
         }
         newData.TypeID = newId;
-        console.log(newData);
 
         // Thêm dữ liệu mới
         db.query("INSERT INTO " + TBT.ACCOUNT_TYPE + " SET ?", newData, function (err, res) {
