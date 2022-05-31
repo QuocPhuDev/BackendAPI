@@ -29,7 +29,7 @@ Account.get_all = function (result) {
 // Phương thức get details
 Account.getById = function (id, result) {
     db.query("SELECT * FROM account WHERE UserID = ?", id, function (err, res) {
-        if (err) {
+        if (err || res.length == 0) {
             console.log("error: " + err);
             result(null);
             return;
@@ -38,20 +38,31 @@ Account.getById = function (id, result) {
             result(res);
             return;
         }
-        // not found, return
-        result({ data: "not found" }, null);
     });
 }
 
 // Phương thức create
 Account.create = function (newData, result) {
-    db.query("INSERT INTO Account SET ?", newData, function (err, res) {
-        if (err) {
-            console.log("error: " + err);
-            result(null);
-            return;
+    var newId;
+    // Lấy UserID lớn nhất hiện tại + 1
+    db.query("SELECT MAX(CAST(MID(UserID,4,5) as unsigned)) AS MaxUser FROM Account", function (err, res) {
+        if (err || res.length == 0) {
+            newId = "Acc1";
+        } else {
+            let numId = Number(res[0].MaxUser) + 1;
+            newId = "Acc" + numId;
         }
-        result({ id: res.insertId, ...newData });
+        newData.UserID = newId;
+
+        // Thêm dữ liệu mới
+        db.query("INSERT INTO Account SET ?", newData, function (err, res) {
+            if (err) {
+                console.log("error: " + err);
+                result(null);
+                return;
+            }
+            result({ id: newData.UserID, ...newData });
+        });
     });
 }
 
@@ -71,15 +82,39 @@ Account.update = function (updateData, result) {
 
 // Phương thức delete
 Account.remove = function (id, result) {
-    db.query("DELETE FROM account WHERE UserID = ?", id, function (err, res) {
+    db.query("SELECT * FROM account WHERE UserID = ?", id, function (err, res) {
+        if (err || res.length == 0) {
+            console.log("error: " + err);
+            result(null);
+            return;
+        } else {
+            db.query("DELETE FROM account WHERE UserID = ?", id, function (err, res) {
+                if (err) {
+                    console.log("error: " + err);
+                    result(null);
+                    return;
+                }
+                result("Deleted data with id = " + id);
+            });
+        }
+    });
+}
+
+// Kiểm tra đăng nhập
+Account.check_login = function (data, result) {
+    db.query("SELECT * FROM account WHERE UserID = ? AND Password = ?", [data.UserID, data.Password], function (err, res) {
         if (err) {
             console.log("error: " + err);
             result(null);
             return;
         }
-        result("Deleted data with id = " + id);
+        if (res.length) {
+            result(res);
+            return;
+        }
+        // not found, return
+        result(null);
     });
 }
-
 
 module.exports = Account;

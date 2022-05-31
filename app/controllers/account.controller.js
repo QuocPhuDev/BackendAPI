@@ -1,16 +1,25 @@
 var Account = require('../models/account.model')
+var JWT = require('../common/_JWT')
 
 // Khỏi tạo controller lấy dữ liệu danh sách
 exports.get_list = function (req, res) {
-    Account.get_all(function (data) {
-        res.send({ msCode: 200, results: data });
+    Account.get_all(function (response) {
+        if (response) {
+            res.send({ code: 200, message: "Success", results: response });
+        } else {
+            res.send({ code: 204, message: "Data not found", results: null });
+        }
     });
 }
 
 // Khởi tạo controller lấy dữ liệu details
 exports.details = function (req, res) {
-    Account.getById(req.params.id, function (data) {
-        res.send({ result: data });
+    Account.getById(req.params.id, function (response) {
+        if (response) {
+            res.send({ code: 200, message: "Success", results: response });
+        } else {
+            res.send({ code: 204, message: "User not found", results: null });
+        }
     });
 }
 
@@ -20,7 +29,11 @@ exports.add_account = function (req, res) {
     var data = req.body;
     // Phương thức thêm mới từ model
     Account.create(data, function (response) {
-        res.send({ result: response });
+        if (response) {
+            res.send({ code: 200, message: "Success", results: response });
+        } else {
+            res.send({ code: 403, message: "Can't add account", results: null });
+        }
     });
 }
 
@@ -30,7 +43,11 @@ exports.update_account = function (req, res) {
     var data = req.body;
     // Phương thức update từ model
     Account.update(data, function (response) {
-        res.send({ result: response });
+        if (response) {
+            res.send({ code: 200, message: "Success", results: response });
+        } else {
+            res.send({ code: 403, message: "Can't update account", results: null });
+        }
     });
 }
 
@@ -38,6 +55,24 @@ exports.update_account = function (req, res) {
 exports.remove_account = function (req, res) {
     var id = req.params.id;
     Account.remove(id, function (response) {
-        res.send({ result: response });
+        if (response) {
+            res.send({ code: 200, message: "Success", results: response });
+        } else {
+            res.send({ code: 403, message: "Can't delete account, account does not exist", results: null });
+        }
+    });
+}
+
+// Phương thức đăng nhập
+exports.login = function (req, res) {
+    // Lấy data từ request
+    var data = req.body;
+    Account.check_login(data, async function (response) {
+        if (response) {
+            const _token = await JWT.make(response);
+            res.send({ code: 200, message: "Success", results: _token });
+        } else {
+            res.send({ code: 404, message: "User or password incorrect", results: null });
+        }
     });
 }

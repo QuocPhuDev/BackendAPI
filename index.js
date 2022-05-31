@@ -3,11 +3,15 @@ var app = express();
 
 // Cấu hình body-parser
 var bodyParser = require('body-parser');
+const _AuthMiddleWare = require('./app/common/_AuthMiddleWare');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // Khai báo các router
 require('./app/routers/home.router')(app);
+require('./app/routers/login.router')(app);
+// Check token trước khi thực hiện các api
+app.use(_AuthMiddleWare.isAuth)
 require('./app/routers/account.router')(app);
 
 // Khởi tạo port server
