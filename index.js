@@ -1,11 +1,13 @@
 var express = require('express');
 var app = express();
+var cors = require('cors');
 
 // Cấu hình body-parser
 var bodyParser = require('body-parser');
 const _AuthMiddleWare = require('./app/common/_AuthMiddleWare');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cors());
 
 // Khai báo các router
 require('./app/routers/home.router')(app);
