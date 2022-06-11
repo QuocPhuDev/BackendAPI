@@ -1,8 +1,7 @@
 module.exports = function (router) {
     // Khai báo controller
-    var accountController = require('../controllers/account.controller');
+    var logintController = require('../controllers/login.controller');
 
     // Gọi xử lý các controller tương ứng
-    router.post('/user/login', accountController.login);
-    router.post('/user/add', accountController.add_account);
+    router.post('/user/login', logintController.login);
 };

@@ -1,5 +1,6 @@
 const db = require('../database/connect');
 const TBT = require('../database/table')
+const os = require('os')
 
 // Khởi tạo đối tượng
 const Account = function (account) {
@@ -62,7 +63,7 @@ Account.create = function (newData, result) {
                 result(null);
                 return;
             }
-            result({...newData });
+            result({ ...newData });
         });
     });
 }
@@ -110,10 +111,27 @@ Account.check_login = function (data, result) {
             return;
         }
         if (res.length) {
+            // Thêm dữ liệu mới cho authen
+            var authenData = {};
+            authenData.UserID = data.UserID;
+            var dateTime = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
+            authenData.LoginTime = dateTime;
+            var computerName = String(os.hostname);
+            authenData.Device = computerName;
+            console.log(authenData);
+            if (authenData) {
+                db.query("INSERT INTO " + TBT.AUTHEN + " SET ?", authenData, function (err, res) {
+                    if (err) {
+                        console.log("error: " + err);
+                        result(null);
+                        return;
+                    }
+                });
+            }
             result(res);
             return;
         }
-        // not found, return
+        // Không tìm thấy thì return
         result(null);
     });
 }
