@@ -6,6 +6,6 @@ module.exports = function (router) {
     router.get('/order/list', orderController.get_list);
     router.get('/order/byid/:id', orderController.details);
     router.post('/order/add', orderController.add);
-    router.delete('/order/delete/:id', orderController.remove);
     router.put('/order/update', orderController.update);
+    router.delete('/order/delete/:id', orderController.remove);
 };

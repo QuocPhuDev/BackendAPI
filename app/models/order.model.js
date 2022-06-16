@@ -50,29 +50,52 @@ Order.create = function (newData, result) {
         }
         newData.OID = newId;
         console.log(newData);
-        // Thêm dữ liệu mới
-        db.query("INSERT INTO " + TBT.ORDER + " SET ?", newData, function (err, res) {
+        var dateTime = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
+        // Thêm dữ liệu mới cho bảng order
+        db.query("INSERT INTO " + TBT.ORDER + " VALUES (?,?,?,?,?)", [newData.OID, newData.UserID, dateTime, newData.TotalAmount, 0], function (err, res) {
             if (err) {
                 console.log("error: " + err);
                 result(null);
                 return;
+            } else {
+                // Thêm dữ liệu mới cho bảng order details
+                db.query("INSERT INTO " + TBT.ORDER_DETAIL + " VALUES (?,?,?,?,?,?,?)",
+                    [newData.TourID, newData.SID, newData.OID, newData.OrderedSlot, newData.Amount, newData.BeginDate, newData.EndDate], function (err, res) {
+                        if (err) {
+                            console.log("error: " + err);
+                            result(null);
+                            return;
+                        } else {
+                            result({ ...newData });
+                        }
+                    });
             }
-            result({ ...newData });
         });
     });
 }
 
 // Phương thức update
 Order.update = function (updateData, result) {
+    var dateTime = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
     db.query("UPDATE " + TBT.ORDER + " SET UserID=?, OrderTime=?, TotalAmount=?, Status=? WHERE OID=?",
-        [updateData.UserID, updateData.OrderTime, updateData.TotalAmount, updateData.Status, updateData.OID],
-        function (err, res) {
+        [updateData.UserID, dateTime, updateData.TotalAmount, updateData.Status, updateData.OID], function (err, res) {
             if (err) {
                 console.log("error: " + err);
                 result(null);
                 return;
+            } else {
+                // Thêm dữ liệu mới cho bảng order details
+                db.query("UPDATE " + TBT.ORDER_DETAIL + " SET TourID=?, SID=?, OrderedSlot=?, Amount=?, BeginDate=?, EndDate=? WHERE OID = ?",
+                    [updateData.TourID, updateData.SID, updateData.OrderedSlot, updateData.Amount, updateData.BeginDate, updateData.EndDate, updateData.OID], function (err, res) {
+                        if (err) {
+                            console.log("error: " + err);
+                            result(null);
+                            return;
+                        } else {
+                            result({ ...updateData });
+                        }
+                    });
             }
-            result(updateData);
         });
 }
 
@@ -84,13 +107,22 @@ Order.remove = function (id, result) {
             result(null);
             return;
         } else {
-            db.query("DELETE FROM " + TBT.ORDER + " WHERE OID = ?", id, function (err, res) {
+            db.query("DELETE FROM " + TBT.ORDER_DETAIL + " WHERE OID = ?", id, function (err, res) {
                 if (err) {
                     console.log("error: " + err);
                     result(null);
                     return;
+                } else {
+                    db.query("DELETE FROM " + TBT.ORDER + " WHERE OID = ?", id, function (err, res) {
+                        if (err) {
+                            console.log("error: " + err);
+                            result(null);
+                            return;
+                        } else {
+                            result("Deleted data with id = " + id);
+                        }
+                    });
                 }
-                result("Deleted data with id = " + id);
             });
         }
     });
