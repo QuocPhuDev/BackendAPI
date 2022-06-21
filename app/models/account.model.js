@@ -104,7 +104,7 @@ Account.remove = function (id, result) {
 
 // Kiểm tra đăng nhập
 Account.check_login = function (data, result) {
-    db.query("SELECT * FROM " + TBT.ACCOUNT + " WHERE UserID = ? AND Password = ?", [data.UserID, data.Password], function (err, res) {
+    db.query("SELECT * FROM " + TBT.ACCOUNT + " WHERE Email = ? AND Password = ?", [data.Email, data.Password], function (err, res) {
         if (err) {
             console.log("error: " + err);
             result(null);
