@@ -12,8 +12,19 @@ exports.get_list = function (req, res) {
 }
 
 // Khởi tạo controller lấy dữ liệu details
-exports.details = function (req, res) {
+exports.byid = function (req, res) {
     Order.getById(req.params.id, function (response) {
+        if (response) {
+            res.send({ code: 200, message: "Success", results: response });
+        } else {
+            res.send({ code: 204, message: "Data not found", results: null });
+        }
+    });
+}
+
+// Khởi tạo controller lấy dữ liệu details
+exports.details = function (req, res) {
+    Order.getDetails(req.params.id, function (response) {
         if (response) {
             res.send({ code: 200, message: "Success", results: response });
         } else {

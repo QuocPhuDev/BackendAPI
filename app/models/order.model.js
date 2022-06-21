@@ -22,7 +22,7 @@ Order.get_all = function (result) {
     });
 }
 
-// Phương thức get details
+// Phương thức get by id
 Order.getById = function (id, result) {
     db.query("SELECT * FROM " + TBT.ORDER + " WHERE OID = ?", id, function (err, res) {
         if (err || res.length == 0) {
@@ -35,6 +35,24 @@ Order.getById = function (id, result) {
             return;
         }
     });
+}
+
+// Phương thức get details
+Order.getDetails = function (id, result) {
+    db.query("SELECT O.OID, UserID, OrderTime, TourID, SID, OrderedSlot, BeginDate, EndDate, Amount, TotalAmount, O.Status FROM "
+        + TBT.ORDER + " O LEFT JOIN " + TBT.ORDER_DETAIL + " D ON O.OID = D.OID WHERE O.OID = ?"
+        , id, function (err, res) {
+            console.log(res);
+            if (err || res.length == 0) {
+                console.log("error: " + err);
+                result(null);
+                return;
+            }
+            if (res.length) {
+                result(res);
+                return;
+            }
+        });
 }
 
 // Phương thức create
