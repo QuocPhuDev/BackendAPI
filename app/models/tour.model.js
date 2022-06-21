@@ -17,8 +17,8 @@ const Tour = function (tour) {
 }
 
 // Phương thức get all
-Tour.get_all = function (result) {
-    db.query("SELECT * FROM " + TBT.TOUR, function (err, data) {
+Tour.get_all = function (limit, result) {
+    db.query("SELECT * FROM " + TBT.TOUR + " LIMIT " + limit, function (err, data) {
         if (err) {
             result(null);
         } else {
@@ -30,6 +30,20 @@ Tour.get_all = function (result) {
 // Phương thức get details
 Tour.getById = function (id, result) {
     db.query("SELECT * FROM " + TBT.TOUR + " WHERE TourID = ?", id, function (err, res) {
+        if (err || res.length == 0) {
+            console.log("error: " + err);
+            result(null);
+            return;
+        }
+        if (res.length) {
+            result(res);
+            return;
+        }
+    });
+}
+
+Tour.getByStatus = function (id, result) {
+    db.query("SELECT * FROM " + TBT.TOUR + " WHERE Status = ?", id, function (err, res) {
         if (err || res.length == 0) {
             console.log("error: " + err);
             result(null);

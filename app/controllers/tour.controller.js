@@ -2,7 +2,7 @@ var Tour = require('../models/tour.model')
 
 // Khỏi tạo controller lấy dữ liệu danh sách
 exports.get_list = function (req, res) {
-    Tour.get_all(function (response) {
+    Tour.get_all(req.params.limit, function (response) {
         if (response) {
             res.send({ code: 200, message: "Success", results: response });
         } else {
@@ -14,6 +14,16 @@ exports.get_list = function (req, res) {
 // Khởi tạo controller lấy dữ liệu details
 exports.details = function (req, res) {
     Tour.getById(req.params.id, function (response) {
+        if (response) {
+            res.send({ code: 200, message: "Success", results: response });
+        } else {
+            res.send({ code: 204, message: "Data not found", results: null });
+        }
+    });
+}
+
+exports.bystatus = function (req, res) {
+    Tour.getByStatus(req.params.id, function (response) {
         if (response) {
             res.send({ code: 200, message: "Success", results: response });
         } else {

@@ -37,6 +37,20 @@ Order.getById = function (id, result) {
     });
 }
 
+Order.getByUserId = function (id, result) {
+    db.query("SELECT * FROM " + TBT.ORDER + " WHERE UserID = ?", id, function (err, res) {
+        if (err || res.length == 0) {
+            console.log("error: " + err);
+            result(null);
+            return;
+        }
+        if (res.length) {
+            result(res);
+            return;
+        }
+    });
+}
+
 // Phương thức get details
 Order.getDetails = function (id, result) {
     db.query("SELECT O.OID, UserID, OrderTime, TourID, SID, OrderedSlot, BeginDate, EndDate, Amount, TotalAmount, O.Status FROM "
