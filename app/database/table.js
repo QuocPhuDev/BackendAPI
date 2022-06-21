@@ -5,6 +5,7 @@ const TOUR = "tour";
 const ORDER = "tour.order";
 const ORDER_DETAIL = "order_detail";
 const SERVICE = "service";
+const FEEDBACK = "feedback";
 
 module.exports = {
     ACCOUNT: ACCOUNT,
@@ -14,4 +15,5 @@ module.exports = {
     ORDER: ORDER,
     ORDER_DETAIL: ORDER_DETAIL,
     SERVICE: SERVICE,
+    FEEDBACK: FEEDBACK,
 };
