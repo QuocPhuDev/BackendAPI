@@ -113,7 +113,7 @@ Account.check_login = function (data, result) {
         if (res.length) {
             // Thêm dữ liệu mới cho authen
             var authenData = {};
-            authenData.UserID = data.UserID;
+            authenData.UserID = res[0].UserID;
             var dateTime = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
             authenData.LoginTime = dateTime;
             var computerName = String(os.hostname);
